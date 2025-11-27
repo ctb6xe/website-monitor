@@ -1,0 +1,31 @@
+name: Daily Website Monitor
+
+on:
+  schedule:
+    # Runs at 8:30 AM EST (13:30 UTC) every day
+    - cron: '30 13 * * *'
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Install dependencies
+        run: pip install requests
+      
+      - name: Run website monitor
+        env:
+          TARGET_URL: ${{ secrets.TARGET_URL }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+        run: python website_monitor.py
